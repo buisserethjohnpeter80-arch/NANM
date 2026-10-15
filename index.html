@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NANM — Se connecter. Partager. Honorer.</title>
+  <meta name="description" content="NANM — Réseau social. Se connecter. Partager. Honorer." />
+  <!-- Ionic Core via CDN (aucune étape de build requise pour l'aperçu) -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+  <style>
+/* NANM — thème. */
+:root {
+  --ion-color-primary: #1d4a37;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-secondary: #c05b2e;
+  --ion-color-tertiary: #c6a23c;
+  --ion-color-danger: #c05b2e;
+  --ion-background-color: #faf6ea;
+  --ion-text-color: #5c5340;
+  --ion-toolbar-background: #faf6ea;
+  --ion-tab-bar-background: #faf6ea;
+  --ion-tab-bar-color-selected: #1d4a37;
+  --cream: #faf6ea;
+  --cream-deep: #f3ecda;
+  --green: #1d4a37;
+  --green-dark: #123426;
+  --gold: #c6a23c;
+  --terra: #c05b2e;
+  --warm: #5c5340;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #e9e1cd; }
+.hidden { display: none !important; }
+
+/* Mise en page centrée, mobile-first (≤ 520 px comme l'ancien aperçu). */
+ion-app { max-width: 520px; margin: 0 auto; background: var(--cream); box-shadow: 0 0 30px rgba(0,0,0,.12); }
+.page { padding: 12px 14px 28px; }
+.card { background: #fff; border: 1px solid var(--cream-deep); border-radius: 16px; padding: 14px; margin-bottom: 14px; }
+h2, h3 { color: var(--green-dark); margin: 8px 0; }
+.muted { color: var(--warm); opacity: .75; font-size: .9em; }
+.empty { text-align: center; color: var(--warm); opacity: .8; padding: 18px 8px; }
+.form-error { color: #a33; background: #fdecec; border-radius: 10px; padding: 8px 10px; font-size: .9em; }
+
+/* Auth */
+.auth-view { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px 14px; background: var(--cream); }
+.auth-card { width: 100%; max-width: 460px; background: #fff; border: 1px solid var(--cream-deep); border-radius: 20px; padding: 22px 18px; }
+.brand { text-align: center; margin-bottom: 12px; }
+.brand-mark { width: 64px; height: 64px; margin: 0 auto 8px; border-radius: 50%; background: var(--green); color: #fff; font-size: 34px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold); }
+.brand h1 { margin: 0; color: var(--green-dark); letter-spacing: 4px; }
+.tagline { margin: 4px 0 0; color: var(--terra); font-weight: 600; }
+.welcome-text { text-align: center; color: var(--warm); }
+.auth-sub { color: var(--warm); margin-top: -4px; }
+.auth-note, .auth-switch { text-align: center; font-size: .9em; color: var(--warm); }
+.setup-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--cream-deep); color: var(--green-dark); font-weight: 800; font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }
+
+/* Avatar = initiales */
+.avatar { width: 42px; height: 42px; min-width: 42px; border-radius: 50%; background: var(--green); color: #fff; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
+.avatar.large { width: 72px; height: 72px; min-width: 72px; font-size: 26px; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.post-head { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+.post-head .meta { line-height: 1.2; }
+.post-head strong { color: var(--green-dark); }
+.handle { color: var(--warm); font-size: .85em; }
+.post-text { white-space: pre-wrap; margin: 6px 0 10px; color: #2f2a20; }
+.post-photo { width: 100%; border-radius: 12px; margin-bottom: 8px; }
+.post-actions { display: flex; gap: 10px; align-items: center; }
+.like-btn { border: 1px solid var(--cream-deep); background: #fff; border-radius: 20px; padding: 6px 12px; cursor: pointer; font-size: .95em; }
+.like-btn.liked { background: #fdecec; border-color: #f0b8b8; }
+.counts { color: var(--warm); font-size: .85em; }
+
+/* Compositeur */
+.composer-row { display: flex; gap: 10px; align-items: flex-start; }
+.composer-actions { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 6px; }
+.file-input { display: none; }
+.file-label { cursor: pointer; border: 1px solid var(--cream-deep); background: var(--cream); border-radius: 18px; padding: 7px 12px; font-size: .9em; color: var(--green-dark); }
+.photo-name { font-size: .8em; color: var(--warm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
+
+/* Événements */
+.event-card { display: flex; gap: 12px; }
+.event-date { text-align: center; background: var(--cream-deep); border-radius: 12px; padding: 8px 10px; min-width: 58px; }
+.event-date .day { font-size: 22px; font-weight: 800; color: var(--green-dark); display: block; }
+.event-date .month { font-size: .8em; font-weight: 700; color: var(--terra); }
+.event-body { flex: 1; }
+.event-body h3 { margin: 0 0 4px; }
+.event-meta { font-size: .88em; color: var(--warm); margin: 2px 0; }
+.delete-btn { color: #a33; background: none; border: none; cursor: pointer; font-size: .85em; padding: 4px 0; }
+
+/* Conversations + chat */
+.conv-item { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; background: #fff; border: 1px solid var(--cream-deep); border-radius: 14px; padding: 10px; margin-bottom: 8px; cursor: pointer; }
+.conv-item .conv-main { flex: 1; min-width: 0; }
+.conv-item .last { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--warm); font-size: .9em; }
+.unread-badge { background: var(--terra); color: #fff; border-radius: 12px; padding: 2px 8px; font-size: .8em; font-weight: 700; }
+.member-item { display: flex; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--cream-deep); border-radius: 12px; padding: 8px 10px; margin-bottom: 6px; cursor: pointer; }
+.chat-view { position: fixed; inset: 0; z-index: 50; background: var(--cream); display: flex; flex-direction: column; max-width: 520px; margin: 0 auto; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.bubble { max-width: 80%; padding: 9px 12px; border-radius: 16px; font-size: .95em; white-space: pre-wrap; }
+.bubble.me { align-self: flex-end; background: var(--green); color: #fff; border-bottom-right-radius: 4px; }
+.bubble.other { align-self: flex-start; background: #fff; border: 1px solid var(--cream-deep); border-bottom-left-radius: 4px; }
+.bubble .time { display: block; font-size: .7em; opacity: .7; margin-top: 4px; }
+.chat-input-row { display: flex; gap: 8px; padding: 10px; background: #fff; border-top: 1px solid var(--cream-deep); }
+
+/* Profil */
+.profile-top { display: flex; gap: 14px; align-items: center; }
+.profile-top h2 { margin: 0; }
+.bio { white-space: pre-wrap; color: #2f2a20; }
+.stats { font-weight: 600; color: var(--green-dark); }
+.profile-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.photo-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }
+ion-button { --background: var(--green); --border-radius: 14px; }
+ion-tab-button { --color-selected: var(--green); }
+
+/* ============ RESTYLE mockup NANM (feuilles, veve, cartes douces) ============ */
+body { background: #efe8d6; }
+ion-app {
+  background:
+    radial-gradient(120px 120px at 8% 4%, rgba(198,162,60,.16), transparent 70%),
+    radial-gradient(140px 140px at 96% 8%, rgba(29,74,55,.12), transparent 70%),
+    radial-gradient(110px 110px at 0% 55%, rgba(192,91,46,.10), transparent 70%),
+    var(--cream);
+}
+ion-toolbar { --background: transparent; }
+ion-header { box-shadow: none; }
+ion-header ion-title { color: var(--green-dark); font-weight: 800; letter-spacing: 2px; }
+.page { padding: 10px 14px 34px; }
+.card { border-radius: 20px; border: 1px solid #eee3c8; box-shadow: 0 6px 18px rgba(92,83,64,.08); }
+
+/* Ornement veve + bannière marque */
+.veve-svg { width: 100%; height: 100%; display: block; }
+.veve-inline { width: 30px; height: 30px; display: inline-flex; flex-shrink: 0; }
+.veve-inline.small { width: 26px; height: 26px; }
+.brand-mark { width: 76px; height: 76px; padding: 8px; background: #fdf8e7; border: 2px solid var(--gold); box-shadow: 0 4px 14px rgba(198,162,60,.25); color: transparent; }
+.brand h1 { font-size: 2.4rem; letter-spacing: 6px; }
+.brand-sub { margin: 2px 0 0; color: var(--terra); font-weight: 700; font-size: 1.02em; }
+.brand-desc { margin: 6px auto 0; max-width: 340px; color: var(--warm); font-size: .92em; }
+.brand-banner { display: flex; align-items: center; gap: 10px; background: linear-gradient(180deg, #fdf6dd, #f6ecd0); border: 1px solid #eadfae; border-radius: 16px; padding: 10px 12px; margin-bottom: 12px; }
+.brand-banner.compact { padding: 8px 12px; }
+.brand-banner .veve-inline { width: 36px; height: 36px; }
+.brand-banner-text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-banner-text strong { color: var(--green-dark); letter-spacing: 3px; font-size: 1.15em; }
+.brand-banner-text small { color: var(--terra); font-weight: 700; font-size: .82em; }
+.brand-banner-tag { margin-left: auto; text-align: right; font-size: .78em; font-weight: 700; color: var(--green); max-width: 150px; }
+
+/* Stories */
+.stories-row { display: flex; gap: 12px; overflow-x: auto; padding: 6px 2px 12px; scrollbar-width: none; }
+.stories-row::-webkit-scrollbar { display: none; }
+.story { border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; padding: 0; }
+.story span:last-child { font-size: .68em; color: var(--warm); max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.story .avatar { width: 54px; height: 54px; min-width: 54px; border: 2.5px solid var(--gold); outline: 2px solid #fff; outline-offset: 1px; box-shadow: 0 2px 8px rgba(198,162,60,.35); }
+.story.mine .avatar { border-color: var(--terra); }
+
+/* Valeurs */
+.values-section { background: linear-gradient(180deg, #fdf8e7, #faf6ea); border: 1px solid #eadfae; border-radius: 18px; padding: 14px; margin-top: 6px; }
+.values-title { display: flex; align-items: center; gap: 8px; color: var(--green-dark); font-size: 1.25em; margin: 0 0 10px; font-style: italic; }
+.values-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.value-item { display: flex; gap: 8px; align-items: flex-start; }
+.value-item strong { color: var(--green-dark); font-size: .95em; }
+.value-item p { margin: 2px 0 0; font-size: .82em; color: var(--warm); line-height: 1.35; }
+.value-icon { width: 30px; height: 30px; min-width: 30px; border-radius: 50%; background: #f6ebc9; color: var(--terra); display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.values-quote { text-align: center; font-style: italic; color: var(--green-dark); font-weight: 700; margin: 12px 0 0; }
+
+/* Postes : actions style mockup */
+.post-actions { border-top: 1px solid var(--cream-deep); padding-top: 8px; }
+.like-btn { border: none; background: transparent; padding: 6px 8px; }
+.counts { margin-left: auto; }
+
+/* Événements */
+.section-heading { color: var(--green-dark); font-size: 1.05em; margin: 12px 2px 10px; }
+ion-segment { --background: #f3ecda; border-radius: 22px; margin-bottom: 6px; }
+ion-segment-button { --color-checked: #fff; --background-checked: var(--green); --border-radius: 18px; }
+.event-card { align-items: stretch; overflow: hidden; }
+.event-date { min-width: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(180deg, #f9e7d4, #f3ecda); border-right: 1px solid #eadfae; border-radius: 12px 0 0 12px; padding: 10px 6px; margin: -14px 0 -14px -14px; }
+.event-date .day { font-size: 30px; }
+.event-date .month { letter-spacing: 1px; }
+.btn-terra { --background: var(--terra); margin-top: 10px; }
+
+/* Messages */
+.conv-item { border-radius: 18px; padding: 12px 10px; }
+.conv-item .avatar { width: 50px; height: 50px; min-width: 50px; border: 2px solid #eadfae; }
+.conv-item .conv-main strong { color: var(--green-dark); }
+.conv-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.conv-time { font-size: .72em; color: var(--warm); }
+.unread-badge { background: #2e8b7a; min-width: 22px; text-align: center; }
+ion-searchbar { --background: #fff; --border-radius: 20px; }
+
+/* Profil */
+.profile-head { overflow: hidden; padding: 0 14px 14px; }
+.profile-cover { height: 84px; margin: 0 -14px 0; background: radial-gradient(120px 60px at 15% 50%, rgba(198,162,60,.45), transparent 70%), radial-gradient(140px 70px at 85% 30%, rgba(192,91,46,.35), transparent 70%), linear-gradient(135deg, #f6ecd0, #eadfae 55%, #d9e5d5); border-bottom: 1px solid #eadfae; }
+.profile-avatar-wrap { position: relative; margin-top: -34px; }
+.profile-top .avatar.large { width: 96px; height: 96px; min-width: 96px; font-size: 30px; border: 3px solid var(--gold); box-shadow: 0 4px 14px rgba(0,0,0,.15); background: var(--green); }
+.profile-veve-badge { position: absolute; right: -2px; bottom: 2px; width: 30px; height: 30px; background: #fff; border: 1.5px solid var(--gold); border-radius: 50%; padding: 3px; }
+.profile-role { margin: 2px 0; color: var(--warm); font-size: .9em; }
+.bio-gold { background: #fdf6dd; border: 1px solid #eadfae; border-radius: 12px; padding: 10px 12px; font-style: italic; }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 6px; border-top: 1px solid var(--cream-deep); border-bottom: 1px solid var(--cream-deep); padding: 10px 0; }
+.stats-row strong { font-size: 1.1em; }
+.stats-row small { color: var(--warm); font-size: .78em; }
+.sub-heading { font-size: 1em; margin: 14px 0 6px; }
+.about-text { font-size: .9em; color: var(--warm); margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border-radius: 20px; padding: 6px 12px; font-size: .82em; font-weight: 700; }
+.chip-green { background: #dce9e0; color: var(--green-dark); }
+.chip-cream { background: #f6ecd0; color: #8a6a1c; }
+.chip-terra { background: #f9e7d4; color: #9c4520; }
+.chip-gold { background: #f6ebc9; color: #8a6a1c; }
+
+/* Barre d'onglets + bouton central */
+ion-tab-bar { --background: #fdf8e7; border-top: 1px solid #eadfae; padding-bottom: env(safe-area-inset-bottom); }
+.tab-central { width: 58px; height: 58px; min-width: 58px; border-radius: 50%; border: 3px solid var(--gold); background: var(--green); color: #fff; cursor: pointer; align-self: flex-start; margin-top: -26px; padding: 10px; box-shadow: 0 6px 16px rgba(29,74,55,.35); z-index: 2; }
+.tab-central:active { transform: scale(.97); }
+
+</style>
+  <!-- styles.css inline pou preview yon sèl fichye (fichye styles.css la toujou la pou dev) -->
+</head>
+<body>
+  <ion-app>
+    <!-- ============ VUE AUTH (Welcome / Login / Signup) ============ -->
+    <div id="auth-view" class="auth-view">
+      <div class="auth-card">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" class="veve-svg"><path d="M24 3c2.5 5 7 7 7 13 0 6-4 9-7 17-3-8-7-11-7-17 0-6 4.5-8 7-13z" fill="#c6a23c"/><path d="M24 14c1.8 3.4 4.5 4.6 4.5 8.2 0 4-2.6 6.2-4.5 10.8-1.9-4.6-4.5-6.8-4.5-10.8 0-3.6 2.7-4.8 4.5-8.2z" fill="#1d4a37"/><circle cx="24" cy="38" r="2.6" fill="#c05b2e"/><path d="M12 42l4-3 3 3-3 2.5zM33 42l4-3 3 3-3 2.5z" fill="#1d4a37"/></svg></div>
+          <h1>NANM</h1>
+          <p class="brand-sub">Réseau social Vodou</p>
+          <p class="tagline">Se connecter. Partager. Honorer.</p>
+          <p class="brand-desc">Une communauté vivante, enracinée dans nos traditions.</p>
+        </div>
+
+        <!-- Bienvenue -->
+        <section id="screen-welcome" class="auth-screen">
+          <p class="welcome-text">Retrouvez votre communauté, partagez vos moments et honorez vos traditions.</p>
+          <ion-button expand="block" id="btn-go-login">Se connecter</ion-button>
+          <ion-button expand="block" fill="outline" id="btn-go-signup">Créer un compte</ion-button>
+          <p class="auth-note">En continuant, vous acceptez de partager avec respect.</p>
+        </section>
+
+        <!-- Connexion -->
+        <section id="screen-login" class="auth-screen hidden">
+          <h2>Bon retour</h2>
+          <p class="auth-sub">Connectez-vous pour retrouver votre fil.</p>
+          <ion-list>
+            <ion-item><ion-label position="stacked">E-mail</ion-label><ion-input id="login-email" type="email" placeholder="vous@exemple.com" autocomplete="email"></ion-input></ion-item>
+            <ion-item><ion-label position="stacked">Mot de passe</ion-label><ion-input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password"></ion-input></ion-item>
+          </ion-list>
+          <p id="login-error" class="form-error hidden"></p>
+          <ion-button expand="block" id="btn-login">Se connecter</ion-button>
+          <ion-button expand="block" fill="clear" class="link-btn" data-nav="welcome">← Retour</ion-button>
+          <p class="auth-switch">Pas encore de compte ? <a href="#" data-nav="signup">Créer un compte</a></p>
+        </section>
+
+        <!-- Inscription -->
+        <section id="screen-signup" class="auth-screen hidden">
+          <h2>Créez votre compte</h2>
+          <p class="auth-sub">Nom, e-mail et mot de passe — c'est tout pour commencer.</p>
+          <ion-list>
+            <ion-item><ion-label position="stacked">Nom complet</ion-label><ion-input id="signup-name" type="text" placeholder="Votre nom" autocomplete="name"></ion-input></ion-item>
+            <ion-item><ion-label position="stacked">E-mail</ion-label><ion-input id="signup-email" type="email" placeholder="vous@exemple.com" autocomplete="email"></ion-input></ion-item>
+            <ion-item><ion-label position="stacked">Mot de passe (6 caractères min.)</ion-label><ion-input id="signup-password" type="password" placeholder="••••••••" autocomplete="new-password"></ion-input></ion-item>
+            <ion-item lines="none">
+              <ion-label>Photo de profil (optionnel)</ion-label>
+              <input type="file" id="signup-photo" accept="image/*" class="file-input" />
+              <label for="signup-photo" class="file-label">Choisir</label>
+            </ion-item>
+          </ion-list>
+          <p id="signup-error" class="form-error hidden"></p>
+          <ion-button expand="block" id="btn-signup">Créer mon compte</ion-button>
+          <ion-button expand="block" fill="clear" class="link-btn" data-nav="welcome">← Retour</ion-button>
+          <p class="auth-switch">Déjà un compte ? <a href="#" data-nav="login">Se connecter</a></p>
+        </section>
+
+        <!-- Configuration du profil (après inscription) -->
+        <section id="screen-profile-setup" class="auth-screen hidden">
+          <h2>Complétez votre profil</h2>
+          <p class="auth-sub">Ajoutez une bio pour vous présenter à la communauté.</p>
+          <div class="setup-avatar"><span id="setup-avatar-initials">N</span></div>
+          <ion-list>
+            <ion-item><ion-label position="stacked">Bio (optionnel, 300 caractères max)</ion-label><ion-textarea id="setup-bio" rows="3" placeholder="Qui êtes-vous ? Que partagez-vous ?"></ion-textarea></ion-item>
+          </ion-list>
+          <p id="setup-error" class="form-error hidden"></p>
+          <ion-button expand="block" id="btn-setup-save">Continuer</ion-button>
+          <ion-button expand="block" fill="clear" id="btn-setup-skip">Passer cette étape</ion-button>
+        </section>
+      </div>
+    </div>
+
+    <!-- ============ APP PRINCIPALE : TABS ============ -->
+    <ion-tabs id="main-tabs" class="hidden">
+      <!-- ACCUEIL / FEED -->
+      <ion-tab tab="accueil">
+        <ion-header><ion-toolbar><ion-title>NANM</ion-title><ion-buttons slot="end"><ion-button id="btn-refresh-feed" fill="clear">Actualiser</ion-button></ion-buttons></ion-toolbar></ion-header>
+        <ion-content>
+          <div class="page">
+            <div class="brand-banner" aria-hidden="true"><span class="veve-inline"><svg viewBox="0 0 48 48" class="veve-svg"><path d="M24 3c2.5 5 7 7 7 13 0 6-4 9-7 17-3-8-7-11-7-17 0-6 4.5-8 7-13z" fill="#c6a23c"/><path d="M24 14c1.8 3.4 4.5 4.6 4.5 8.2 0 4-2.6 6.2-4.5 10.8-1.9-4.6-4.5-6.8-4.5-10.8 0-3.6 2.7-4.8 4.5-8.2z" fill="#1d4a37"/><circle cx="24" cy="38" r="2.6" fill="#c05b2e"/></svg></span><span class="brand-banner-text"><strong>NANM</strong><small>Réseau social Vodou</small></span><span class="brand-banner-tag">Se connecter. Partager. Honorer.</span></div>
+            <div id="stories-row" class="stories-row" aria-label="Stories"></div>
+            <div class="composer card">
+              <div class="composer-row">
+                <span id="composer-avatar" class="avatar initials">N</span>
+                <ion-textarea id="composer-text" rows="2" placeholder="Quoi de neuf dans la communauté ?"></ion-textarea>
+              </div>
+              <div class="composer-actions">
+                <input type="file" id="composer-photo" accept="image/*" class="file-input" />
+                <label for="composer-photo" class="file-label">📷 Photo</label>
+                <span id="composer-photo-name" class="photo-name"></span>
+                <ion-button id="btn-publish" size="small">Publier</ion-button>
+              </div>
+              <p id="feed-error" class="form-error hidden"></p>
+            </div>
+            <div id="feed-list" class="feed-list"><p class="empty">Chargement du fil…</p></div>
+            <section class="values-section" aria-label="Nos valeurs">
+              <h3 class="values-title"><span class="veve-inline small"><svg viewBox="0 0 48 48" class="veve-svg"><path d="M24 3c2.5 5 7 7 7 13 0 6-4 9-7 17-3-8-7-11-7-17 0-6 4.5-8 7-13z" fill="#c6a23c"/><path d="M24 14c1.8 3.4 4.5 4.6 4.5 8.2 0 4-2.6 6.2-4.5 10.8-1.9-4.6-4.5-6.8-4.5-10.8 0-3.6 2.7-4.8 4.5-8.2z" fill="#1d4a37"/></svg></span>Nos valeurs</h3>
+              <div class="values-grid">
+                <div class="value-item"><span class="value-icon" aria-hidden="true">✦</span><div><strong>Respè</strong><p>Pou tèt, pou lòt, pou tradisyon yo.</p></div></div>
+                <div class="value-item"><span class="value-icon" aria-hidden="true">♡</span><div><strong>Lanmou</strong><p>Se baz tout relasyon nan kominote a.</p></div></div>
+                <div class="value-item"><span class="value-icon" aria-hidden="true">✦</span><div><strong>Transmisyon</strong><p>Kenbe flanm nan limen, pou jenerasyon k&apos;ap vini yo.</p></div></div>
+                <div class="value-item"><span class="value-icon" aria-hidden="true">♡</span><div><strong>Inite</strong><p>Ansanm, nou pi fò.</p></div></div>
+              </div>
+              <p class="values-quote">« Men anpil, chay pa lou. »</p>
+            </section>
+          </div>
+        </ion-content>
+      </ion-tab>
+
+      <!-- ÉVÉNEMENTS -->
+      <ion-tab tab="evenements">
+        <ion-header><ion-toolbar><ion-title>Événements</ion-title><ion-buttons slot="end"><ion-button id="btn-open-event-form">＋ Créer</ion-button></ion-buttons></ion-toolbar></ion-header>
+        <ion-content>
+          <div class="page">
+            <div class="brand-banner compact" aria-hidden="true"><span class="veve-inline"><svg viewBox="0 0 48 48" class="veve-svg"><path d="M24 3c2.5 5 7 7 7 13 0 6-4 9-7 17-3-8-7-11-7-17 0-6 4.5-8 7-13z" fill="#c6a23c"/><path d="M24 14c1.8 3.4 4.5 4.6 4.5 8.2 0 4-2.6 6.2-4.5 10.8-1.9-4.6-4.5-6.8-4.5-10.8 0-3.6 2.7-4.8 4.5-8.2z" fill="#1d4a37"/></svg></span><span class="brand-banner-text"><strong>NANM</strong><small>Réseau social Vodou</small></span></div>
+            <ion-segment id="event-segment" value="avenir">
+              <ion-segment-button value="avenir"><ion-label>À venir</ion-label></ion-segment-button>
+              <ion-segment-button value="calendrier"><ion-label>Calendrier</ion-label></ion-segment-button>
+              <ion-segment-button value="passes"><ion-label>Passés</ion-label></ion-segment-button>
+            </ion-segment>
+            <h3 id="event-heading" class="section-heading">Événements à venir</h3>
+            <div id="event-list" class="event-list"><p class="empty">Chargement des événements…</p></div>
+            <ion-button expand="block" id="btn-show-all-events" class="btn-terra">Voir tous les événements</ion-button>
+            <!-- Formulaire création -->
+            <div id="event-form" class="card hidden">
+              <h3>Nouvel événement</h3>
+              <ion-list>
+                <ion-item><ion-label position="stacked">Titre</ion-label><ion-input id="event-title" placeholder="Titre de l'événement"></ion-input></ion-item>
+                <ion-item><ion-label position="stacked">Date</ion-label><ion-input id="event-date" type="date"></ion-input></ion-item>
+                <ion-item><ion-label position="stacked">Heure</ion-label><ion-input id="event-time" placeholder="Ex : 18h00"></ion-input></ion-item>
+                <ion-item><ion-label position="stacked">Lieu</ion-label><ion-input id="event-location" placeholder="Lieu"></ion-input></ion-item>
+                <ion-item><ion-label position="stacked">Description</ion-label><ion-textarea id="event-description" rows="3" placeholder="Décrivez l'événement…"></ion-textarea></ion-item>
+              </ion-list>
+              <p id="event-error" class="form-error hidden"></p>
+              <ion-button expand="block" id="btn-create-event">Créer l'événement</ion-button>
+              <ion-button expand="block" fill="clear" id="btn-cancel-event">Annuler</ion-button>
+            </div>
+          </div>
+        </ion-content>
+      </ion-tab>
+
+      <!-- MESSAGES -->
+      <ion-tab tab="messages">
+        <ion-header><ion-toolbar><ion-title>Messages</ion-title><ion-buttons slot="end"><ion-button id="btn-new-chat">Nouveau</ion-button></ion-buttons></ion-toolbar></ion-header>
+        <ion-content>
+          <div class="page">
+            <div class="brand-banner compact" aria-hidden="true"><span class="veve-inline"><svg viewBox="0 0 48 48" class="veve-svg"><path d="M24 3c2.5 5 7 7 7 13 0 6-4 9-7 17-3-8-7-11-7-17 0-6 4.5-8 7-13z" fill="#c6a23c"/><path d="M24 14c1.8 3.4 4.5 4.6 4.5 8.2 0 4-2.6 6.2-4.5 10.8-1.9-4.6-4.5-6.8-4.5-10.8 0-3.6 2.7-4.8 4.5-8.2z" fill="#1d4a37"/></svg></span><span class="brand-banner-text"><strong>NANM</strong><small>Réseau social Vodou</small></span></div>
+            <ion-searchbar id="member-search" placeholder="Rechercher un membre…" debounce="300"></ion-searchbar>
+            <div id="member-results" class="member-results hidden"></div>
+            <div id="conv-list" class="conv-list"><p class="empty">Chargement des conversations…</p></div>
+          </div>
+        </ion-content>
+      </ion-tab>
+
+      <!-- PROFIL -->
+      <ion-tab tab="profil">
+        <ion-header><ion-toolbar><ion-title>Profil</ion-title></ion-toolbar></ion-header>
+        <ion-content>
+          <div class="page">
+            <div class="card profile-head">
+              <div class="profile-cover" aria-hidden="true"></div>
+              <div class="profile-top">
+                <span class="profile-avatar-wrap"><span id="profile-avatar" class="avatar initials large">N</span><span class="profile-veve-badge" aria-hidden="true"><svg viewBox="0 0 48 48" class="veve-svg"><path d="M24 3c2.5 5 7 7 7 13 0 6-4 9-7 17-3-8-7-11-7-17 0-6 4.5-8 7-13z" fill="#c6a23c"/><path d="M24 14c1.8 3.4 4.5 4.6 4.5 8.2 0 4-2.6 6.2-4.5 10.8-1.9-4.6-4.5-6.8-4.5-10.8 0-3.6 2.7-4.8 4.5-8.2z" fill="#1d4a37"/></svg></span></span>
+                <div>
+                  <h2 id="profile-name">—</h2>
+                  <p id="profile-handle" class="handle">—</p>
+                  <p id="profile-role" class="profile-role">Membre</p>
+                  <p id="profile-email" class="muted">—</p>
+                </div>
+              </div>
+              <p id="profile-bio" class="bio bio-gold">—</p>
+              <p class="stats stats-row"><span><strong id="profile-followers-count">0</strong><br /><small>Abonnés</small></span><span><strong id="profile-following-count">0</strong><br /><small>Abonnements</small></span><span><strong id="profile-posts-count">0</strong><br /><small>Publications</small></span><span class="stats-photos"><strong id="profile-photos-count">0</strong><br /><small>Photos</small></span></p>
+              <h3 class="sub-heading">À propos</h3>
+              <p class="about-text">Membre de la communauté NANM. Le bio ci-dessus présente ce compte.</p>
+              <h3 class="sub-heading">Centres d&apos;intérêt</h3>
+              <div class="chips"><span class="chip chip-green">Vodou</span><span class="chip chip-cream">Spiritualité</span><span class="chip chip-terra">Rituels</span><span class="chip chip-gold">Chants</span><span class="chip chip-cream">Herbes</span><span class="chip chip-gold">Communauté</span></div>
+              <div class="profile-actions">
+                <input type="file" id="profile-photo-input" accept="image/*" class="file-input" />
+                <label for="profile-photo-input" class="file-label">Changer la photo</label>
+                <ion-button size="small" fill="outline" id="btn-edit-bio">Modifier la bio</ion-button>
+                <ion-button size="small" color="danger" fill="clear" id="btn-logout">Déconnexion</ion-button>
+              </div>
+              <div id="bio-editor" class="hidden">
+                <ion-textarea id="bio-input" rows="3" maxlength="300" placeholder="Votre bio…"></ion-textarea>
+                <p id="bio-error" class="form-error hidden"></p>
+                <ion-button size="small" id="btn-save-bio">Enregistrer</ion-button>
+                <ion-button size="small" fill="clear" id="btn-cancel-bio">Annuler</ion-button>
+              </div>
+              <p id="profile-error" class="form-error hidden"></p>
+            </div>
+            <h3>Mes publications</h3>
+            <div id="profile-posts" class="feed-list"><p class="empty">Aucune publication pour le moment.</p></div>
+            <h3>Mes photos publiées</h3>
+            <div id="profile-photos" class="photo-grid"><p class="empty">Aucune photo publiée.</p></div>
+          </div>
+        </ion-content>
+      </ion-tab>
+
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="accueil"><ion-icon name="home"></ion-icon><ion-label>Accueil</ion-label></ion-tab-button>
+        <ion-tab-button tab="evenements"><ion-icon name="calendar"></ion-icon><ion-label>Événements</ion-label></ion-tab-button>
+        <button type="button" id="btn-central-compose" class="tab-central" aria-label="Publier"><svg viewBox="0 0 48 48" class="veve-svg"><path d="M24 3c2.5 5 7 7 7 13 0 6-4 9-7 17-3-8-7-11-7-17 0-6 4.5-8 7-13z" fill="#f6ebc9"/><path d="M24 14c1.8 3.4 4.5 4.6 4.5 8.2 0 4-2.6 6.2-4.5 10.8-1.9-4.6-4.5-6.8-4.5-10.8 0-3.6 2.7-4.8 4.5-8.2z" fill="#fff"/><circle cx="24" cy="38" r="2.6" fill="#c6a23c"/></svg></button>
+        <ion-tab-button tab="messages"><ion-icon name="chatbubbles"></ion-icon><ion-label>Messages</ion-label><ion-badge id="total-unread-badge" color="danger" class="hidden">0</ion-badge></ion-tab-button>
+        <ion-tab-button tab="profil"><ion-icon name="person"></ion-icon><ion-label>Profil</ion-label></ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+
+    <!-- ============ FIL DE DISCUSSION (overlay) ============ -->
+    <div id="chat-view" class="chat-view hidden">
+      <ion-header><ion-toolbar>
+        <ion-buttons slot="start"><ion-button id="btn-close-chat">← Retour</ion-button></ion-buttons>
+        <ion-title id="chat-title">Discussion</ion-title>
+      </ion-toolbar></ion-header>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-input-row">
+        <ion-input id="chat-input" placeholder="Écrivez un message…"></ion-input>
+        <ion-button id="btn-send-chat">Envoyer</ion-button>
+      </div>
+      <p id="chat-error" class="form-error hidden"></p>
+    </div>
+
+    <ion-toast id="toast" duration="2500" position="bottom"></ion-toast>
+  </ion-app>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons/dist/ionicons/ionicons.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
