@@ -1,0 +1,18 @@
+{
+  "name": "my-ionic-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ionic serve",
+    "sync": "cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "latest",
+    "@capacitor/core": "latest",
+    "@ionic/core": "latest"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "latest",
+    "@ionic/cli": "latest"
+  }
+}
