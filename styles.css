@@ -275,3 +275,24 @@ ion-button { font-size: 14.5px; font-weight: 600; letter-spacing: .1px; }
 .muted { font-size: 13px; font-weight: 400; line-height: 1.5; }
 input, textarea { font-size: 15px; font-weight: 400; line-height: 1.45; }
 ion-label { font-size: 14px; font-weight: 500; }
+
+/* FIX 2026-10-16 — bouton Publier trop gros + tag bannière pas responsive */
+.composer-actions ion-button#btn-publish { --padding-start: 14px; --padding-end: 12px; --min-height: 32px; font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; --border-radius: 999px; }
+.composer-actions ion-button#btn-publish ion-icon { font-size: 15px; }
+.brand-banner { min-width: 0; }
+.brand-banner-text { min-width: 0; }
+.brand-banner-text small { white-space: nowrap; }
+@media (max-width: 480px) {
+  .brand-banner { flex-wrap: wrap; }
+  .brand-banner-tag { max-width: none; width: 100%; margin: 6px 0 0 46px; text-align: left; font-size: 12px; font-weight: 600; line-height: 1.4; }
+}
+
+/* MENU PUBLICATION 2026-10-16 — ... sur les posts des autres : Signaler / Pas intéressé / Republier */
+.post-menu { position: fixed; z-index: 80; width: 230px; background: #fff; border: 1px solid #eee3c8; border-radius: 14px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
+.post-menu button { width: 100%; display: flex; align-items: center; gap: 10px; border: 0; background: transparent; padding: 11px 10px; font-size: 14px; font-weight: 500; color: #1f1c16; cursor: pointer; text-align: left; border-radius: 10px; }
+.post-menu button:active { background: #f6ecd0; }
+.post-menu ion-icon { font-size: 19px; color: var(--green); }
+
+/* FIX BOUTON ... 2026-10-16 — taille comme image référence : petit, discret */
+.post-menu-btn { padding: 4px; color: #8a8578; }
+.post-menu-btn ion-icon { font-size: 18px; }
